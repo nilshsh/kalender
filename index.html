@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Min fargeglade kalender 2026</title>
+    <!-- Tailwind CSS for vakkert grensesnitt -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for ren og barnevennlig typografi -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .title-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+        
+        /* Spesifikke stiler for skjerm-forhåndsvisning av "A4-sider" */
+        .preview-container {
+            perspective: 1000px;
+        }
+        
+        .a4-page {
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            position: relative;
+            box-sizing: border-box;
+            page-break-after: always;
+            break-after: page;
+            /* Bruker en CSS-variabel som styres dynamisk av marginSelect */
+            padding: var(--page-padding, 10mm);
+            transition: padding 0.2s ease;
+        }
+
+        /* Liggende format (A4 forhold 1.414) */
+        .a4-landscape {
+            width: 297mm;
+            height: 210mm;
+            max-width: 100%;
+            /* Bevarer sideforhold på skjerm */
+            aspect-ratio: 297 / 210;
+            height: auto;
+        }
+
+        /* Stående format (A4 forhold 0.707) */
+        .a4-portrait {
+            width: 210mm;
+            height: 297mm;
+            max-width: 100%;
+            /* Bevarer sideforhold på skjerm */
+            aspect-ratio: 210 / 297;
+            height: auto;
+        }
+
+        /* Utskriftsinnstillinger som overstyrer alt annet når man printer */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-area {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .a4-page {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                /* Overfører valgt marg-størrelse direkte til printen */
+                padding: var(--page-padding, 10mm) !important; 
+                page-break-after: always !important;
+                break-after: page !important;
+                width: 100% !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                box-sizing: border-box !important;
+            }
+            /* Tvinger nettleseren til å respektere valgt sideretning */
+            @page {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row">
+
+    <!-- KONTROLLPANEL (Skjules ved utskrift) -->
+    <aside class="no-print w-full lg:w-96 bg-white border-b lg:border-b-0 lg:border-r border-slate-200 p-6 flex flex-col justify-between shrink-0 shadow-sm z-10">
+        <div>
+            <!-- Header -->
+            <div class="flex items-center space-x-3 mb-5">
+                <div class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-800 title-font tracking-wide">Barnekalender 2026</h1>
+                    <p class="text-[11px] text-slate-500">Juni – Desember 2026</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Kalendertittel -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Overskrift på sidene</label>
+                    <input type="text" id="calendarTitle" value="Min egen kalender 2026" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 font-medium">
+                </div>
+
+                <!-- Retning -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Retning (A4)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setOrientation('landscape')" id="btn-landscape" class="py-1.5 px-3 border-2 border-indigo-500 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm2 1h10v8H5V6z"/></svg>
+                            <span>Liggende</span>
+                        </button>
+                        <button onclick="setOrientation('portrait')" id="btn-portrait" class="py-1.5 px-3 border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm1 2h8v10H6V5z"/></svg>
+                            <span>Stående</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sideoppsett -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Sideoppsett</label>
+                    <select id="layoutSelect" onchange="renderCalendar()" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700">
+                        <option value="grid-only" selected>Kun rutenett (Maks skriveplass)</option>
+                        <option value="drawing-top">Tegnefelt øverst / Rutenett nederst</option>
+                        <option value="drawing-side">Side-ved-side (Tegning venstre, Ruter høyre)</option>
+                    </select>
+                </div>
+
+                <!-- Marg-størrelse selector -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Marg-størrelse (A4)</label>
+                    <select id="marginSelect" onchange="renderCalendar()" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 font-medium">
+                        <option value="5mm">Smal marg (5 mm) - gir aller størst kalender</option>
+                        <option value="10mm" selected>Normal marg (10 mm)</option>
+                        <option value="15mm">Bred marg (15 mm)</option>
+                        <option value="20mm">Ekstra bred marg (20 mm)</option>
+                    </select>
+                </div>
+
+                <!-- Pynt/Tema -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Dekorativt Tema</label>
+                    <select id="themeSelect" onchange="renderCalendar()" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700">
+                        <option value="plain">Minimalistisk og helt ren</option>
+                        <option value="hearts" selected>Søte hjerter & stjerner (tegnet stil)</option>
+                        <option value="nature">Natur (blomster og skyer)</option>
+                    </select>
+                </div>
+
+                <!-- Ekstra innstillinger -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Flere valg</label>
+                    <div class="space-y-2 mt-1">
+                        <label class="flex items-center space-x-2.5 text-xs text-slate-600 cursor-pointer">
+                            <input type="checkbox" id="showWeeks" checked onchange="renderCalendar()" class="w-3.5 h-3.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
+                            <span>Vis ukenummer</span>
+                        </label>
+                        <label class="flex items-center space-x-2.5 text-xs text-slate-600 cursor-pointer">
+                            <input type="checkbox" id="colorSundays" checked onchange="renderCalendar()" class="w-3.5 h-3.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
+                            <span>Fargelegg søndager koselig rød</span>
+                        </label>
+                        <label class="flex items-center space-x-2.5 text-xs text-slate-600 cursor-pointer">
+                            <input type="checkbox" id="boldLines" onchange="renderCalendar()" class="w-3.5 h-3.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
+                            <span>Ekstra tydelige svarte ruter (for print)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print-knapp og instruksjoner -->
+        <div class="mt-6 pt-4 border-t border-slate-100">
+            <button onclick="triggerPrint()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-md shadow-indigo-100 flex items-center justify-center space-x-2 transition cursor-pointer text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.82l-.24-2.07a1.877 1.877 0 011.85-2.09h8.34a1.877 1.877 0 011.85 2.09l-.24 2.07m-11.7 0a2.25 2.25 0 00-.73 3.77l.32.32c.83.83 2.165.83 3 .01a2.25 2.25 0 013.18 0l3 3m10.122-13.822a.75.75 0 00-1.06-1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 00-1.06-1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 00-1.06-1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 00-1.06-1.06l-1.06 1.06M9 9h.01M12 12h.01M15 15h.01M18 18h.01" />
+                </svg>
+                <span>Skriv ut nå!</span>
+            </button>
+            
+            <p class="text-[10px] text-slate-500 text-center mt-2 px-1">
+                Fungerer ikke knappen? Klikk på kalenderen til høyre og trykk 
+                <kbd class="px-1 bg-slate-100 border border-slate-300 rounded text-slate-700 font-semibold shadow-sm">Ctrl + P</kbd> 
+                (<kbd class="px-1 bg-slate-100 border border-slate-300 rounded text-slate-700 font-semibold shadow-sm">Cmd + P</kbd> på Mac).
+            </p>
+
+            <div class="mt-3.5 bg-amber-50 rounded-lg p-3 border border-amber-100 text-[11px] text-amber-800">
+                <strong class="font-semibold block mb-0.5">Viktig for best resultat:</strong>
+                <ul class="list-disc list-inside space-y-0.5">
+                    <li>Velg <span class="font-semibold" id="hint-orientation">Liggende</span> i skrivermenyen.</li>
+                    <li>Sett marginer i skrivermenyen til <span class="font-semibold">"Ingen"</span> eller <span class="font-semibold">"Standard"</span>.</li>
+                    <li>Sørg for at <span class="font-semibold">"Bakgrunnsgrafikk"</span> er krysset av!</li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <!-- HOVEDOMRÅDE (Forhåndsvisning av arkene) -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center bg-slate-100 min-h-screen">
+        <div class="no-print mb-4 text-center lg:text-left w-full max-w-4xl">
+            <h2 class="text-xl font-bold text-slate-800 title-font">Forhåndsvisning av kalendersidene</h2>
+            <p class="text-xs text-slate-500">Slik vil sidene se ut. Legg merke til at kalenderen utnytter nesten hele plassen på arket!</p>
+        </div>
+
+        <!-- Utskriftsområde der de dynamiske månedene settes inn -->
+        <div id="printArea" class="print-area flex flex-col items-center w-full">
+            <!-- Dynamisk generert kalender blir satt inn her av JS -->
+        </div>
+    </main>
+
+    <!-- Dynamisk stilvelger for skriverretning -->
+    <style id="orientationPrintStyle">
+        @media print {
+            @page { size: landscape; margin: 0; }
+        }
+    </style>
+
+    <script>
+        // Tilstands-variabler
+        let orientation = 'landscape'; // 'landscape' eller 'portrait'
+        const monthsData = [
+            { index: 5, name: 'Juni', year: 2026 },
+            { index: 6, name: 'Juli', year: 2026 },
+            { index: 7, name: 'August', year: 2026 },
+            { index: 8, name: 'September', year: 2026 },
+            { index: 9, name: 'Oktober', year: 2026 },
+            { index: 10, name: 'November', year: 2026 },
+            { index: 11, name: 'Desember', year: 2026 }
+        ];
+
+        // Fokusér og skriv ut (nødvendig for iframes)
+        function triggerPrint() {
+            window.focus();
+            setTimeout(() => {
+                window.print();
+            }, 50);
+        }
+
+        // Lytte etter endring i kalendertittel (Kjører full re-render for å oppdatere layouten sømløst)
+        document.getElementById('calendarTitle').addEventListener('input', renderCalendar);
+
+        // Sett retning på A4-arket
+        function setOrientation(value) {
+            orientation = value;
+            
+            const btnLandscape = document.getElementById('btn-landscape');
+            const btnPortrait = document.getElementById('btn-portrait');
+            const hintOrientation = document.getElementById('hint-orientation');
+            const printStyle = document.getElementById('orientationPrintStyle');
+            
+            if (value === 'landscape') {
+                btnLandscape.className = "py-1.5 px-3 border-2 border-indigo-500 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition";
+                btnPortrait.className = "py-1.5 px-3 border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition";
+                hintOrientation.textContent = "Liggende";
+                printStyle.innerHTML = "@media print { @page { size: landscape; margin: 0; } }";
+            } else {
+                btnLandscape.className = "py-1.5 px-3 border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition";
+                btnPortrait.className = "py-1.5 px-3 border-2 border-indigo-500 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition";
+                hintOrientation.textContent = "Stående";
+                printStyle.innerHTML = "@media print { @page { size: portrait; margin: 0; } }";
+            }
+            
+            renderCalendar();
+        }
+
+        // Hent ISO ukenummer for en bestemt dato
+        function getWeekNumber(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        }
+
+        // Dekorative illustrasjons-elementer datteren kan fargelegge
+        function getThemeSVGs(theme, position) {
+            if (theme === 'plain') return '';
+            
+            if (theme === 'hearts') {
+                if (position === 'header') {
+                    return `
+                        <div class="absolute top-1 right-2 text-pink-300 opacity-60 print:opacity-100 no-print lg:block flex space-x-1.5">
+                            <svg class="w-5 h-5 transform rotate-12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                            </svg>
+                            <svg class="w-3.5 h-3.5 transform -rotate-12 mt-2 text-amber-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.173-.439.817-.439.99 0l3 6a1 1 0 00.751.583l6.5 1c.542.083.759.743.371 1.127l-4.75 4.625a1 1 0 00-.287.884l1.15 6.45c.097.545-.478.963-.963.708l-5.8-3.05a1 1 0 00-.94 0l-5.8 3.05c-.485.255-1.06-.163-.963-.708l1.15-6.45a1 1 0 00-.287-.884l-4.75-4.625c-.388-.384-.171-1.044.371-1.127l6.5-1a1 1 0 00.751-.583l3-6z" />
+                            </svg>
+                        </div>
+                    `;
+                } else if (position === 'drawing') {
+                    return `
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 print:opacity-10">
+                            <svg class="w-24 h-24 text-pink-400" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.283 8.283 0 013.137-3.414z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+                            </svg>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (theme === 'nature') {
+                if (position === 'header') {
+                    return `
+                        <div class="absolute top-1 right-3 text-emerald-300 opacity-60 print:opacity-100 no-print lg:flex space-x-1 hidden">
+                            <svg class="w-5 h-5 text-sky-200" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />
+                            </svg>
+                            <svg class="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                            </svg>
+                        </div>
+                    `;
+                } else if (position === 'drawing') {
+                    return `
+                        <div class="absolute bottom-1 right-1 pointer-events-none opacity-20 text-emerald-400">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                                <path d="M12 10a2 2 0 100 4 2 2 0 000-4z" />
+                                <path d="M12 10c.8-1.5 2.5-2 4-1 .8.5 1.2 1.5 1 2.5-.5 1-2 1.5-3 1M12 14c-.8 1.5-2.5 2-4 1-.8-.5-1.2-1.5-1-2.5.5-1 2-1.5 3-1" />
+                                <path d="M14 12c1.5.8 2 2.5 1 4-.5.8-1.5 1.2-2.5 1-1-.5-1.5-2-1-3" />
+                                <path d="M10 12c-1.5-.8-2-2.5-1-4 .5-.8 1.5-1.2 2.5-1 1 .5 1.5 2 1 3" />
+                            </svg>
+                        </div>
+                    `;
+                }
+            }
+            return '';
+        }
+
+        // Generer og tegn hele kalenderen
+        function renderCalendar() {
+            const printArea = document.getElementById('printArea');
+            printArea.innerHTML = ''; // Nullstill
+            
+            const calendarTitleVal = document.getElementById('calendarTitle').value;
+            const layout = document.getElementById('layoutSelect').value;
+            const marginSize = document.getElementById('marginSelect').value;
+            const theme = document.getElementById('themeSelect').value;
+            const showWeeks = document.getElementById('showWeeks').checked;
+            const colorSundays = document.getElementById('colorSundays').checked;
+            const boldLines = document.getElementById('boldLines').checked;
+
+            const daysOfWeek = ['Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'];
+            const borderStyle = boldLines ? 'border-2 border-black' : 'border border-slate-300';
+            const innerLines = boldLines ? 'border-black' : 'border-slate-300';
+
+            const displayTitle = calendarTitleVal.trim();
+
+            // Gå gjennom hver måned fra juni til desember 2026
+            monthsData.forEach((monthObj) => {
+                const year = monthObj.year;
+                const monthIndex = monthObj.index;
+                const monthName = monthObj.name;
+
+                // Opprett side-element
+                const page = document.createElement('div');
+                page.className = `a4-page ${orientation === 'landscape' ? 'a4-landscape' : 'a4-portrait'} flex flex-col justify-between`;
+                
+                // Sett den dynamiske margen direkte på elementet via CSS variable
+                page.style.setProperty('--page-padding', marginSize);
+
+                // Første dag i måneden
+                const firstDayDate = new Date(year, monthIndex, 1);
+                let startDayOfWeek = firstDayDate.getDay(); 
+                startDayOfWeek = (startDayOfWeek === 0) ? 6 : startDayOfWeek - 1;
+
+                const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+
+                // NYTT: Bygg den ultra-kompakte ÉNLINJERS HEADEREN
+                let headerHTML = `
+                    <div class="relative flex justify-between items-center mb-1.5 pb-0.5 border-b border-slate-100">
+                        <div class="flex items-center gap-2 text-slate-800 flex-wrap leading-none">
+                            ${displayTitle ? `<span class="page-custom-title text-xs font-bold tracking-wider text-indigo-500 uppercase">${displayTitle}</span> <span class="text-slate-300 text-xs">—</span>` : ''}
+                            <span class="text-lg font-extrabold title-font tracking-tight">${monthName}</span>
+                            <span class="text-slate-300 text-xs">—</span>
+                            <span class="text-lg font-light text-slate-400">${year}</span>
+                        </div>
+                        ${getThemeSVGs(theme, 'header')}
+                    </div>
+                `;
+
+                // Lag rutenett-strukturen
+                let daysHeadersHTML = daysOfWeek.map((d, idx) => {
+                    const isSunday = idx === 6;
+                    const textClass = (isSunday && colorSundays) ? 'text-rose-500 font-bold' : 'text-slate-600 font-medium';
+                    return `<div class="text-center text-[11px] pb-1 uppercase tracking-wider ${textClass}">${d}</div>`;
+                }).join('');
+
+                const gridColsClass = showWeeks ? 'grid-cols-[1.75rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr]' : 'grid-cols-7';
+                
+                let calendarGridHeaderHTML = '';
+                if (showWeeks) {
+                    calendarGridHeaderHTML = `<div class="text-center text-[9px] text-slate-400 font-bold self-end pb-1">Uke</div>` + daysHeadersHTML;
+                } else {
+                    calendarGridHeaderHTML = daysHeadersHTML;
+                }
+
+                // Dynamisk beregning av nødvendige uker (rader) i denne måneden
+                const cellsNeeded = startDayOfWeek + daysInMonth;
+                const rowsNeeded = Math.ceil(cellsNeeded / 7);
+                const totalCells = rowsNeeded * 7; 
+
+                // Generer alle dagene i måneden
+                let gridCellsHTML = '';
+                let currentDay = 1;
+
+                for (let i = 0; i < totalCells; i++) {
+                    if (i < startDayOfWeek) {
+                        if (showWeeks && i === 0) {
+                            const weekNum = getWeekNumber(new Date(year, monthIndex, 1));
+                            gridCellsHTML += `<div class="flex items-center justify-center text-[10px] font-bold text-slate-400 bg-slate-50 border-r border-dashed ${innerLines}">${weekNum}</div>`;
+                        }
+                        gridCellsHTML += `<div class="bg-slate-50/50 ${innerLines} border-b border-r last:border-r-0"></div>`;
+                    } 
+                    else if (currentDay <= daysInMonth) {
+                        const currentDate = new Date(year, monthIndex, currentDay);
+                        const dayOfWeek = currentDate.getDay(); 
+                        const isSunday = dayOfWeek === 0;
+
+                        if (showWeeks && (i % 7 === 0)) {
+                            const weekNum = getWeekNumber(currentDate);
+                            gridCellsHTML += `<div class="flex items-center justify-center text-[10px] font-bold text-slate-400 bg-slate-50 border-r border-b ${innerLines}">${weekNum}</div>`;
+                        }
+
+                        const isRedSunday = isSunday && colorSundays;
+                        const dayNumClass = isRedSunday 
+                            ? 'text-rose-600 font-bold bg-rose-50 rounded-full w-5.5 h-5.5 flex items-center justify-center' 
+                            : 'text-slate-800 font-medium w-5.5 h-5.5 flex items-center justify-center';
+                        const cellBg = isRedSunday ? 'bg-rose-50/10' : 'bg-white';
+
+                        gridCellsHTML += `
+                            <div class="p-1 flex flex-col justify-between items-start ${cellBg} ${innerLines} border-b border-r last:border-r-0 min-h-0 h-full relative group">
+                                <span class="text-[11px] ${dayNumClass}">${currentDay}</span>
+                                <div class="w-full flex-1"></div>
+                            </div>
+                        `;
+                        currentDay++;
+                    } 
+                    else {
+                        if (showWeeks && (i % 7 === 0) && currentDay > daysInMonth) {
+                            gridCellsHTML += `<div class="bg-slate-50/30 ${innerLines} border-r border-b"></div>`;
+                        }
+                        gridCellsHTML += `<div class="bg-slate-50/30 ${innerLines} border-b border-r last:border-r-0"></div>`;
+                    }
+                }
+
+                // Bygg rutenettet - bruker dynamisk antall rader (rowsNeeded)
+                const rutenettHTML = `
+                    <div class="flex-1 flex flex-col min-h-0">
+                        <div class="grid ${gridColsClass} mb-0.5 shrink-0">
+                            ${calendarGridHeaderHTML}
+                        </div>
+                        <div class="grid ${gridColsClass} ${borderStyle} rounded-xl overflow-hidden flex-1 select-none" style="grid-template-rows: repeat(${rowsNeeded}, minmax(0, 1fr));">
+                            ${gridCellsHTML}
+                        </div>
+                    </div>
+                `;
+
+                // Tegnefeltet
+                const tegnefeltHTML = `
+                    <div class="border-2 border-dashed border-slate-300 rounded-xl flex-1 flex flex-col justify-center items-center relative bg-slate-50/40 min-h-[70px] overflow-hidden">
+                        ${getThemeSVGs(theme, 'drawing')}
+                        <div class="text-center z-10 p-2">
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest block title-font">Tegn en tegning her! 🎨</span>
+                        </div>
+                    </div>
+                `;
+
+                // Sett sammen innholdet etter valgt sideoppsett
+                let contentLayoutHTML = '';
+
+                if (layout === 'grid-only') {
+                    contentLayoutHTML = `
+                        <div class="flex flex-col flex-1 min-h-0">
+                            ${rutenettHTML}
+                        </div>
+                    `;
+                } else if (layout === 'drawing-top') {
+                    contentLayoutHTML = `
+                        <div class="flex flex-col flex-1 gap-3 min-h-0">
+                            <div class="h-[24%] shrink-0 flex flex-col">
+                                ${tegnefeltHTML}
+                            </div>
+                            <div class="flex-1 flex flex-col min-h-0">
+                                ${rutenettHTML}
+                            </div>
+                        </div>
+                    `;
+                } else if (layout === 'drawing-side') {
+                    if (orientation === 'landscape') {
+                        contentLayoutHTML = `
+                            <div class="flex flex-row flex-1 gap-4 min-h-0">
+                                <div class="w-[25%] shrink-0 flex flex-col h-full">
+                                    ${tegnefeltHTML}
+                                </div>
+                                <div class="flex-1 flex flex-col h-full min-h-0">
+                                    ${rutenettHTML}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        contentLayoutHTML = `
+                            <div class="flex flex-col flex-1 gap-3 min-h-0">
+                                <div class="h-[22%] shrink-0 flex flex-col">
+                                    ${tegnefeltHTML}
+                                </div>
+                                <div class="flex-1 flex flex-col min-h-0">
+                                    ${rutenettHTML}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Generer siden helt UTEN footer-div og med ny komprimert header
+                page.innerHTML = `
+                    ${headerHTML}
+                    ${contentLayoutHTML}
+                `;
+
+                printArea.appendChild(page);
+            });
+        }
+
+        // Kjør kalenderen ved oppstart
+        window.onload = function() {
+            renderCalendar();
+        };
+    </script>
+</body>
+</html>
