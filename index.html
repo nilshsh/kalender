@@ -84,33 +84,23 @@
                 box-shadow: none !important;
                 border: none !important;
                 margin: 0 !important;
-                /* Overfører valgt marg-størrelse direkte til printen */
-                padding: var(--page-padding, 10mm) !important; 
+                padding: 0 !important; /* VELDIG VIKTIG: Lar @page-marginen styre rommet rundt arket */
                 page-break-inside: avoid !important;
                 page-break-after: always !important;
                 break-after: page !important;
                 width: 100% !important;
+                height: 100vh !important; /* Fyller nøyaktig det tilgjengelige arkområdet */
                 box-sizing: border-box !important;
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
-                overflow: hidden !important; /* Forhindrer uønsket sideutviding */
             }
-            .a4-landscape {
-                width: 297mm !important;
-                height: 210mm !important;
-                max-width: 297mm !important;
-                max-height: 210mm !important;
-            }
-            .a4-portrait {
-                width: 210mm !important;
-                height: 297mm !important;
-                max-width: 210mm !important;
-                max-height: 297mm !important;
-            }
-            /* Tvinger nettleseren til å respektere valgt sideretning og nullstille standard utskriftsmarginer */
-            @page {
-                margin: 0 !important;
+            .a4-landscape, .a4-portrait {
+                width: 100% !important;
+                height: 100vh !important;
+                max-width: 100% !important;
+                max-height: 100vh !important;
+                aspect-ratio: auto !important; /* Lar innholdet strekke seg fritt til arkets grenser */
             }
         }
     </style>
@@ -226,7 +216,7 @@
                 <strong class="font-semibold block mb-0.5">Viktig for best resultat:</strong>
                 <ul class="list-disc list-inside space-y-0.5">
                     <li>Velg <span class="font-semibold" id="hint-orientation">Liggende</span> i skrivermenyen.</li>
-                    <li>Sett marginer i skrivermenyen til <span class="font-semibold">"Ingen"</span>.</li>
+                    <li>Sett marginer i nettleserens skrivermeny til <span class="font-semibold">"Ingen" (None)</span> eller <span class="font-semibold">"Standard"</span>.</li>
                     <li>Sørg for at <span class="font-semibold">"Bakgrunnsgrafikk"</span> er krysset av!</li>
                     <li>Slå av <span class="font-semibold">"Topp- og bunntekst"</span> (fjerner nettadresser i kanten).</li>
                 </ul>
@@ -250,7 +240,7 @@
     <!-- Dynamisk stilvelger for skriverretning -->
     <style id="orientationPrintStyle">
         @media print {
-            @page { size: landscape; margin: 0; }
+            @page { size: landscape; margin: 10mm; }
         }
     </style>
 
@@ -275,6 +265,21 @@
             }, 50);
         }
 
+        // Oppdater @page-reglene i stilarket basert på retning og valgt margin
+        function updatePrintStyles() {
+            const marginSize = document.getElementById('marginSelect').value;
+            const printStyle = document.getElementById('orientationPrintStyle');
+            
+            printStyle.innerHTML = `
+                @media print {
+                    @page { 
+                        size: ${orientation}; 
+                        margin: ${marginSize}; 
+                    }
+                }
+            `;
+        }
+
         // Lytte etter endring i kalendertittel (Kjører full re-render for å oppdatere layouten sømløst)
         document.getElementById('calendarTitle').addEventListener('input', renderCalendar);
 
@@ -285,20 +290,18 @@
             const btnLandscape = document.getElementById('btn-landscape');
             const btnPortrait = document.getElementById('btn-portrait');
             const hintOrientation = document.getElementById('hint-orientation');
-            const printStyle = document.getElementById('orientationPrintStyle');
             
             if (value === 'landscape') {
                 btnLandscape.className = "py-1.5 px-3 border-2 border-indigo-500 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition";
                 btnPortrait.className = "py-1.5 px-3 border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition";
                 hintOrientation.textContent = "Liggende";
-                printStyle.innerHTML = "@media print { @page { size: landscape; margin: 0; } }";
             } else {
                 btnLandscape.className = "py-1.5 px-3 border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition";
                 btnPortrait.className = "py-1.5 px-3 border-2 border-indigo-500 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition";
                 hintOrientation.textContent = "Stående";
-                printStyle.innerHTML = "@media print { @page { size: portrait; margin: 0; } }";
             }
             
+            updatePrintStyles();
             renderCalendar();
         }
 
@@ -368,6 +371,9 @@
 
         // Generer og tegn hele kalenderen
         function renderCalendar() {
+            // Sørg for at utskriftsstilen med @page-marginen er oppdatert
+            updatePrintStyles();
+
             const printArea = document.getElementById('printArea');
             printArea.innerHTML = ''; // Nullstill
             
@@ -381,9 +387,9 @@
 
             const daysOfWeek = ['Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'];
             
-            // Definerer kant-stiler og dynamiske linjefarger for print og skjerm
-            const borderStyle = boldLines ? 'border-2 border-black' : 'border border-slate-300 print:border-slate-400';
-            const gridBgColor = boldLines ? 'bg-black' : 'bg-slate-300 print:bg-slate-400';
+            // Definerer kant-stiler og solide linjefarger som overlever utskriftsskalering
+            const borderStyle = boldLines ? 'border-2 border-black' : 'border border-slate-300 print:border-slate-500';
+            const gridBgColor = boldLines ? 'bg-black' : 'bg-slate-300 print:bg-slate-500';
 
             const displayTitle = calendarTitleVal.trim();
 
@@ -397,7 +403,7 @@
                 const page = document.createElement('div');
                 page.className = `a4-page ${orientation === 'landscape' ? 'a4-landscape' : 'a4-portrait'} flex flex-col justify-between`;
                 
-                // Sett den dynamiske margen direkte på elementet via CSS variable
+                // Sett den dynamiske margen direkte på elementet via CSS variable for skjerm-forhåndsvisningen
                 page.style.setProperty('--page-padding', marginSize);
 
                 // Første dag i måneden
@@ -485,13 +491,13 @@
                     }
                 }
 
-                // Bygg rutenettet - bruker dynamisk antall rader og gap-[1px] for garantert visning av alle linjer på skrivere
+                // Bygg rutenettet - bruker dynamisk antall rader og gap-[1.5px] som sikrer at ingen streker forsvinner ved skalering
                 const rutenettHTML = `
                     <div class="flex-1 flex flex-col min-h-0">
                         <div class="grid ${gridColsClass} mb-0.5 shrink-0">
                             ${calendarGridHeaderHTML}
                         </div>
-                        <div class="grid ${gridColsClass} ${borderStyle} ${gridBgColor} gap-[1px] rounded-xl overflow-hidden flex-1 select-none" style="grid-template-rows: repeat(${rowsNeeded}, minmax(0, 1fr));">
+                        <div class="grid ${gridColsClass} ${borderStyle} ${gridBgColor} gap-[1.5px] rounded-xl overflow-hidden flex-1 select-none" style="grid-template-rows: repeat(${rowsNeeded}, minmax(0, 1fr));">
                             ${gridCellsHTML}
                         </div>
                     </div>
