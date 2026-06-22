@@ -61,6 +61,10 @@
 
         /* Utskriftsinnstillinger som overstyrer alt annet når man printer */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
             body {
                 background: white !important;
                 color: black !important;
@@ -82,19 +86,31 @@
                 margin: 0 !important;
                 /* Overfører valgt marg-størrelse direkte til printen */
                 padding: var(--page-padding, 10mm) !important; 
+                page-break-inside: avoid !important;
                 page-break-after: always !important;
                 break-after: page !important;
                 width: 100% !important;
-                height: 100vh !important;
-                max-height: 100vh !important;
+                box-sizing: border-box !important;
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
-                box-sizing: border-box !important;
+                overflow: hidden !important; /* Forhindrer uønsket sideutviding */
             }
-            /* Tvinger nettleseren til å respektere valgt sideretning */
+            .a4-landscape {
+                width: 297mm !important;
+                height: 210mm !important;
+                max-width: 297mm !important;
+                max-height: 210mm !important;
+            }
+            .a4-portrait {
+                width: 210mm !important;
+                height: 297mm !important;
+                max-width: 210mm !important;
+                max-height: 297mm !important;
+            }
+            /* Tvinger nettleseren til å respektere valgt sideretning og nullstille standard utskriftsmarginer */
             @page {
-                margin: 0;
+                margin: 0 !important;
             }
         }
     </style>
@@ -210,8 +226,9 @@
                 <strong class="font-semibold block mb-0.5">Viktig for best resultat:</strong>
                 <ul class="list-disc list-inside space-y-0.5">
                     <li>Velg <span class="font-semibold" id="hint-orientation">Liggende</span> i skrivermenyen.</li>
-                    <li>Sett marginer i skrivermenyen til <span class="font-semibold">"Ingen"</span> eller <span class="font-semibold">"Standard"</span>.</li>
+                    <li>Sett marginer i skrivermenyen til <span class="font-semibold">"Ingen"</span>.</li>
                     <li>Sørg for at <span class="font-semibold">"Bakgrunnsgrafikk"</span> er krysset av!</li>
+                    <li>Slå av <span class="font-semibold">"Topp- og bunntekst"</span> (fjerner nettadresser i kanten).</li>
                 </ul>
             </div>
         </div>
@@ -363,8 +380,10 @@
             const boldLines = document.getElementById('boldLines').checked;
 
             const daysOfWeek = ['Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'];
-            const borderStyle = boldLines ? 'border-2 border-black' : 'border border-slate-300';
-            const innerLines = boldLines ? 'border-black' : 'border-slate-300';
+            
+            // Definerer kant-stiler og dynamiske linjefarger for print og skjerm
+            const borderStyle = boldLines ? 'border-2 border-black' : 'border border-slate-300 print:border-slate-400';
+            const gridBgColor = boldLines ? 'bg-black' : 'bg-slate-300 print:bg-slate-400';
 
             const displayTitle = calendarTitleVal.trim();
 
@@ -388,9 +407,9 @@
 
                 const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
 
-                // NYTT: Bygg den ultra-kompakte ÉNLINJERS HEADEREN
+                // Bygg den ultra-kompakte ÉNLINJERS HEADEREN
                 let headerHTML = `
-                    <div class="relative flex justify-between items-center mb-1.5 pb-0.5 border-b border-slate-100">
+                    <div class="relative flex justify-between items-center mb-1.5 pb-0.5 border-b border-slate-200 print:border-slate-300">
                         <div class="flex items-center gap-2 text-slate-800 flex-wrap leading-none">
                             ${displayTitle ? `<span class="page-custom-title text-xs font-bold tracking-wider text-indigo-500 uppercase">${displayTitle}</span> <span class="text-slate-300 text-xs">—</span>` : ''}
                             <span class="text-lg font-extrabold title-font tracking-tight">${monthName}</span>
@@ -422,7 +441,7 @@
                 const rowsNeeded = Math.ceil(cellsNeeded / 7);
                 const totalCells = rowsNeeded * 7; 
 
-                // Generer alle dagene i måneden
+                // Generer alle dagene i måneden med solide bakgrunner for å unngå gjennomsyn til grid-linjene
                 let gridCellsHTML = '';
                 let currentDay = 1;
 
@@ -430,9 +449,9 @@
                     if (i < startDayOfWeek) {
                         if (showWeeks && i === 0) {
                             const weekNum = getWeekNumber(new Date(year, monthIndex, 1));
-                            gridCellsHTML += `<div class="flex items-center justify-center text-[10px] font-bold text-slate-400 bg-slate-50 border-r border-dashed ${innerLines}">${weekNum}</div>`;
+                            gridCellsHTML += `<div class="flex items-center justify-center text-[10px] font-bold text-slate-400 bg-[#f1f5f9]">${weekNum}</div>`;
                         }
-                        gridCellsHTML += `<div class="bg-slate-50/50 ${innerLines} border-b border-r last:border-r-0"></div>`;
+                        gridCellsHTML += `<div class="bg-[#f8fafc]"></div>`;
                     } 
                     else if (currentDay <= daysInMonth) {
                         const currentDate = new Date(year, monthIndex, currentDay);
@@ -441,17 +460,17 @@
 
                         if (showWeeks && (i % 7 === 0)) {
                             const weekNum = getWeekNumber(currentDate);
-                            gridCellsHTML += `<div class="flex items-center justify-center text-[10px] font-bold text-slate-400 bg-slate-50 border-r border-b ${innerLines}">${weekNum}</div>`;
+                            gridCellsHTML += `<div class="flex items-center justify-center text-[10px] font-bold text-slate-400 bg-[#f1f5f9]">${weekNum}</div>`;
                         }
 
                         const isRedSunday = isSunday && colorSundays;
                         const dayNumClass = isRedSunday 
-                            ? 'text-rose-600 font-bold bg-rose-50 rounded-full w-5.5 h-5.5 flex items-center justify-center' 
+                            ? 'text-rose-600 font-bold bg-[#fff1f2] rounded-full w-5.5 h-5.5 flex items-center justify-center' 
                             : 'text-slate-800 font-medium w-5.5 h-5.5 flex items-center justify-center';
-                        const cellBg = isRedSunday ? 'bg-rose-50/10' : 'bg-white';
+                        const cellBg = isRedSunday ? 'bg-[#fff1f2]' : 'bg-white';
 
                         gridCellsHTML += `
-                            <div class="p-1 flex flex-col justify-between items-start ${cellBg} ${innerLines} border-b border-r last:border-r-0 min-h-0 h-full relative group">
+                            <div class="p-1.5 flex flex-col justify-between items-start ${cellBg} min-h-0 h-full relative group">
                                 <span class="text-[11px] ${dayNumClass}">${currentDay}</span>
                                 <div class="w-full flex-1"></div>
                             </div>
@@ -460,27 +479,27 @@
                     } 
                     else {
                         if (showWeeks && (i % 7 === 0) && currentDay > daysInMonth) {
-                            gridCellsHTML += `<div class="bg-slate-50/30 ${innerLines} border-r border-b"></div>`;
+                            gridCellsHTML += `<div class="bg-[#f8fafc]"></div>`;
                         }
-                        gridCellsHTML += `<div class="bg-slate-50/30 ${innerLines} border-b border-r last:border-r-0"></div>`;
+                        gridCellsHTML += `<div class="bg-[#f8fafc]"></div>`;
                     }
                 }
 
-                // Bygg rutenettet - bruker dynamisk antall rader (rowsNeeded)
+                // Bygg rutenettet - bruker dynamisk antall rader og gap-[1px] for garantert visning av alle linjer på skrivere
                 const rutenettHTML = `
                     <div class="flex-1 flex flex-col min-h-0">
                         <div class="grid ${gridColsClass} mb-0.5 shrink-0">
                             ${calendarGridHeaderHTML}
                         </div>
-                        <div class="grid ${gridColsClass} ${borderStyle} rounded-xl overflow-hidden flex-1 select-none" style="grid-template-rows: repeat(${rowsNeeded}, minmax(0, 1fr));">
+                        <div class="grid ${gridColsClass} ${borderStyle} ${gridBgColor} gap-[1px] rounded-xl overflow-hidden flex-1 select-none" style="grid-template-rows: repeat(${rowsNeeded}, minmax(0, 1fr));">
                             ${gridCellsHTML}
                         </div>
                     </div>
                 `;
 
-                // Tegnefeltet
+                // Tegnefeltet med en solid lys farge
                 const tegnefeltHTML = `
-                    <div class="border-2 border-dashed border-slate-300 rounded-xl flex-1 flex flex-col justify-center items-center relative bg-slate-50/40 min-h-[70px] overflow-hidden">
+                    <div class="border-2 border-dashed border-slate-300 rounded-xl flex-1 flex flex-col justify-center items-center relative bg-[#f8fafc] min-h-[70px] overflow-hidden">
                         ${getThemeSVGs(theme, 'drawing')}
                         <div class="text-center z-10 p-2">
                             <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest block title-font">Tegn en tegning her! 🎨</span>
@@ -534,7 +553,7 @@
                     }
                 }
 
-                // Generer siden helt UTEN footer-div og med ny komprimert header
+                // Generer siden helt UTEN footer og med den ultra-kompakte headeren
                 page.innerHTML = `
                     ${headerHTML}
                     ${contentLayoutHTML}
